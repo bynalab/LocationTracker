@@ -19,6 +19,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.SignInMethodQueryResult;
 
 import java.util.Objects;
@@ -55,35 +56,53 @@ public class SignInActivity extends AppCompatActivity {
         if(fieldIsValid(e_email))
         {
             showDialog();
-            mauth.fetchSignInMethodsForEmail(e_email.getText().toString()).addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
-                @Override
-                public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
-                    if(task.isSuccessful())
-                    {
-                        //send user to login
-                        Intent intent = new Intent(SignInActivity.this, LoginActivity.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putString("email", e_email.getText().toString());
-                        intent.putExtras(bundle);
-                        startActivity(intent);
-                    }else
-                        {
-                            //send user to create password
-                            Intent intent = new Intent(SignInActivity.this, SignUpActivity.class);
-                            Bundle bundle = new Bundle();
-                            bundle.putString("email", e_email.getText().toString());
-                            intent.putExtras(bundle);
-                            startActivity(intent);
-                        }
-                    dialog.dismiss();
+            FirebaseUser users = mauth.getCurrentUser();
+            if(users != null)
+            {
+                //send user to login
+                Intent intent = new Intent(SignInActivity.this, LoginActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("email", e_email.getText().toString());
+                intent.putExtras(bundle);
+                startActivity(intent);
+            }else
+                {
+                    //send user to create password
+                    Intent intent = new Intent(SignInActivity.this, SignUpActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("email", e_email.getText().toString());
+                    intent.putExtras(bundle);
+                    startActivity(intent);
                 }
-            });
+            dialog.dismiss();
+//            mauth.fetchSignInMethodsForEmail(e_email.getText().toString()).addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
+//                @Override
+//                public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
+//                    if(task.isSuccessful())
+//                    {
+//                        //send user to login
+//                        Intent intent = new Intent(SignInActivity.this, LoginActivity.class);
+//                        Bundle bundle = new Bundle();
+//                        bundle.putString("email", e_email.getText().toString());
+//                        intent.putExtras(bundle);
+//                        startActivity(intent);
+//                    }else
+//                        {
+//                            //send user to create password
+//                            Intent intent = new Intent(SignInActivity.this, SignUpActivity.class);
+//                            Bundle bundle = new Bundle();
+//                            bundle.putString("email", e_email.getText().toString());
+//                            intent.putExtras(bundle);
+//                            startActivity(intent);
+//                        }
+//                    dialog.dismiss();
+//                }
+//            });
         }
     }
 
     private void showDialog() {
         dialog.setContentView(R.layout.dialog_progress);
-        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.show();
     }
 

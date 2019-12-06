@@ -97,7 +97,6 @@ public class SignUpActivity extends AppCompatActivity {
 
     private void showDialog() {
         dialog.setContentView(R.layout.dialog_progress);
-        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.show();
     }
 
