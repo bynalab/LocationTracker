@@ -56,48 +56,31 @@ public class SignInActivity extends AppCompatActivity {
         if(fieldIsValid(e_email))
         {
             showDialog();
-            FirebaseUser users = mauth.getCurrentUser();
-            if(users != null)
-            {
-                //send user to login
-                Intent intent = new Intent(SignInActivity.this, LoginActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("email", e_email.getText().toString());
-                intent.putExtras(bundle);
-                startActivity(intent);
-            }else
-                {
-                    //send user to create password
-                    Intent intent = new Intent(SignInActivity.this, SignUpActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putString("email", e_email.getText().toString());
-                    intent.putExtras(bundle);
-                    startActivity(intent);
+            mauth.fetchSignInMethodsForEmail(e_email.getText().toString()).addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
+                @Override
+                public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
+                    boolean newUser = task.getResult().getSignInMethods().isEmpty();
+                    if(newUser)
+                    {
+                        //send user to create password
+                        Intent intent = new Intent(SignInActivity.this, SignUpActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("email", e_email.getText().toString());
+                        intent.putExtras(bundle);
+                        startActivity(intent);
+                    }
+                    else
+                        {
+                            //send user to login
+                            Intent intent = new Intent(SignInActivity.this, LoginActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putString("email", e_email.getText().toString());
+                            intent.putExtras(bundle);
+                            startActivity(intent);
+                        }
+                    dialog.dismiss();
                 }
-            dialog.dismiss();
-//            mauth.fetchSignInMethodsForEmail(e_email.getText().toString()).addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
-//                @Override
-//                public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
-//                    if(task.isSuccessful())
-//                    {
-//                        //send user to login
-//                        Intent intent = new Intent(SignInActivity.this, LoginActivity.class);
-//                        Bundle bundle = new Bundle();
-//                        bundle.putString("email", e_email.getText().toString());
-//                        intent.putExtras(bundle);
-//                        startActivity(intent);
-//                    }else
-//                        {
-//                            //send user to create password
-//                            Intent intent = new Intent(SignInActivity.this, SignUpActivity.class);
-//                            Bundle bundle = new Bundle();
-//                            bundle.putString("email", e_email.getText().toString());
-//                            intent.putExtras(bundle);
-//                            startActivity(intent);
-//                        }
-//                    dialog.dismiss();
-//                }
-//            });
+            });
         }
     }
 
